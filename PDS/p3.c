@@ -8,7 +8,6 @@ int main(int argc, char** argv)
 	char msg[100];	
 	MPI_Status status;
 
-	
   // Initialize the MPI environment
   	MPI_Init(&argc,&argv);
  
@@ -20,20 +19,17 @@ int main(int argc, char** argv)
 	  int world_rank;
   	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
  
-	if(world_rank!=0)
-	{
-	sprintf(msg,"creating for proper %d ",world_rank);
-	dest=0;
+	source=(world_rank +world_size -1)%world_size;
+	dest=(world_rank +1)%world_size;
+
+	sprintf(msg,"msg from %d ",world_rank);
+
+	
 	MPI_Send(msg,strlen(msg)+1,MPI_CHAR,dest,tag,MPI_COMM_WORLD);
-	}
-	else
-	{
-		for(source=1;source<world_size;source++)
-		{
 		MPI_Recv(msg,100,MPI_CHAR,source,tag,MPI_COMM_WORLD,&status);
-	printf("%s\n",msg);
-		}
-	}
+	printf("%s to rank %d\n",msg,world_rank);
+		
+	
 
 	  MPI_Finalize();
 	  return 0;
